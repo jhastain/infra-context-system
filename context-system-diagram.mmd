@@ -1,0 +1,64 @@
+graph LR
+    classDef l1 fill:#1a73e8,color:#fff,stroke:#1557b0,stroke-width:3px
+    classDef l2d fill:#34a853,color:#fff,stroke:#1e8e3e,stroke-width:2px
+    classDef l2s fill:#ff6d00,color:#fff,stroke:#e65100,stroke-width:2px
+    classDef l2p fill:#f9ab00,color:#000,stroke:#e09600,stroke-width:2px
+    classDef l2ref fill:#00acc1,color:#fff,stroke:#00838f,stroke-width:2px
+    classDef l3 fill:#ea4335,color:#fff,stroke:#c5221f,stroke-width:2px
+    classDef wiki fill:#9334e6,color:#fff,stroke:#7627bb,stroke-width:2px
+    classDef example fill:#78909c,color:#fff,stroke:#546e7a,stroke-width:2px
+
+    subgraph L1["L1 · always loaded · ~500-800 tokens"]
+        SO["system-overview.md<br/>system map + routing table"]:::l1
+    end
+
+    subgraph L2["L2 · loaded on demand · ~1,500-7,000 tokens"]
+        direction TB
+        subgraph Domains["domains/ — descriptive, by concern"]
+            direction TB
+            GCP["gcp-infrastructure.md"]:::l2d
+            NET["networking-and-security.md"]:::l2d
+            DATA["data-and-storage.md"]:::l2d
+            CICD["cicd-and-deployment.md"]:::l2d
+            OBS["observability.md"]:::l2d
+            TF["terraform.md"]:::l2d
+        end
+        subgraph Systems["systems/ — descriptive, non-standard only"]
+            direction TB
+            S1["ephemeral-environments.md"]:::l2s
+            S2["content-archive.md"]:::l2s
+            S3["build-infrastructure.md"]:::l2s
+            S4["core-monolith.md"]:::l2s
+            S5["media-service.md"]:::l2s
+            S6["internal-ai-agent.md"]:::l2s
+        end
+        subgraph Patterns["patterns/ — prescriptive"]
+            direction TB
+            PH["5 holistic<br/>whole-stack"]:::l2p
+            PD["36 decomposed<br/>one concern each"]:::l2p
+        end
+        CAT["service-catalog.md<br/>one row per service"]:::l2ref
+        REF["reference-docs.md<br/>vendor docs + your tenant"]:::l2ref
+    end
+
+    subgraph L3["L3 · loaded inside a service repo · ~300-500 tokens"]
+        STD["&lt;repo&gt;/standards.md<br/>from templates/standards-template.md"]:::l3
+    end
+
+    WIKI["Authoritative wiki"]:::wiki
+    TEST["examples/cross-layer-test-prompt.md<br/>routing eval"]:::example
+
+    SO -->|"routes to"| Domains
+    SO -->|"routes to"| Systems
+    SO -->|"routes to"| Patterns
+    SO -->|"routes to"| CAT
+    SO -->|"routes to"| L3
+
+    Domains -->|"what exists → how to build"| Patterns
+    CAT -->|"standard service = row + pattern"| Patterns
+    Systems -->|"only where the pattern would lie"| CAT
+    PH -->|"see also"| PD
+
+    Domains -.->|"links out to"| WIKI
+    Systems -.->|"links out to"| WIKI
+    TEST -.->|"exercises routing through"| SO
